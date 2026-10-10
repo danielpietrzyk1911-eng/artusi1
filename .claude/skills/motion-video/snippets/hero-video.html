@@ -1,0 +1,49 @@
+<!-- Vidéo hero : poster immédiat, vidéo légère sur mobile, rien si reduced-motion.
+     Remplacer /assets/video/hero* par les fichiers de prepare-hero.sh. -->
+<section class="hero">
+  <picture class="hero__poster">
+    <source srcset="/assets/video/hero-poster.webp" type="image/webp">
+    <img src="/assets/video/hero-poster.jpg" alt="" fetchpriority="high">
+  </picture>
+  <video class="hero__video" muted loop playsinline preload="none" aria-hidden="true"
+         poster="/assets/video/hero-poster.jpg"
+         data-src-desktop-webm="/assets/video/hero.webm"
+         data-src-desktop-mp4="/assets/video/hero.mp4"
+         data-src-mobile="/assets/video/hero-mobile.mp4"></video>
+  <div class="hero__veil"></div>
+  <div class="hero__content">
+    <h1>Nom du restaurant</h1>
+    <p>Accroche courte</p>
+    <a class="hero__cta" href="#reserver">Réserver</a>
+  </div>
+</section>
+
+<style>
+.hero{position:relative;min-height:100svh;display:grid;place-items:end start;overflow:hidden;color:#fff}
+.hero__poster img,.hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero__video{opacity:0;transition:opacity .8s ease}
+.hero__video.is-ready{opacity:1}
+.hero__veil{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65),rgba(0,0,0,.1) 55%)}
+.hero__content{position:relative;padding:clamp(24px,6vw,80px);max-width:720px}
+@media (prefers-reduced-motion:reduce){.hero__video{display:none}}
+</style>
+
+<script>
+(() => {
+  const v = document.querySelector('.hero__video');
+  if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType))) return;
+  const mobile = matchMedia('(max-width: 768px)').matches;
+  const sources = mobile
+    ? [[v.dataset.srcMobile, 'video/mp4']]
+    : [[v.dataset.srcDesktopWebm, 'video/webm'], [v.dataset.srcDesktopMp4, 'video/mp4']];
+  for (const [src, type] of sources) {
+    const s = document.createElement('source'); s.src = src; s.type = type; v.appendChild(s);
+  }
+  v.addEventListener('canplay', () => v.classList.add('is-ready'), { once: true });
+  v.load();
+  v.play().catch(() => {});
+  // Pause hors écran pour économiser batterie/CPU
+  new IntersectionObserver(([e]) => e.isIntersecting ? v.play().catch(() => {}) : v.pause()).observe(v);
+})();
+</script>

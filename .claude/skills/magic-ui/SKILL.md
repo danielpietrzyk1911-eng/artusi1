@@ -112,3 +112,5 @@ Shared rules across all of them:
 - Every effect respects `prefers-reduced-motion: reduce` (static fallback).
 - Text contrast is preserved over any animated background.
 - Reuse the site's existing CSS variables (colors, fonts, radii) instead of Magic UI defaults.
+- Photo animée / vidéo hero : `motion-video`.
+- Second brain (Obsidian, dossier Drive « Second bain ») : lire la note du restaurant avant de choisir des effets ; noter ensuite les effets retenus dans cette note.
